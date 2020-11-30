@@ -9,6 +9,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const app = express();
 const User = require("./user");
+const path = require('path')
 
 mongoose.connect('mongodb+srv://mazariek:mazariek@cluster0.r14i9.mongodb.net/test?retryWrites=true&w=majority', 
 {
@@ -19,7 +20,7 @@ mongoose.connect('mongodb+srv://mazariek:mazariek@cluster0.r14i9.mongodb.net/tes
 })
 
 //Middleware 
-app.use(bodyParser.json());
+app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
@@ -81,6 +82,13 @@ app.get("/user", (req, res) => {
 });
 
 
+
+if(process.env.NODE_ENV === 'production'){
+    app.use(express.static('client/build'))
+    app.get('*', (req, res)=>{
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+    })
+}
 
 app.listen(5000, () => {
     console.log("Server Has Started");
